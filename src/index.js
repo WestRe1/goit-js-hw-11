@@ -17,8 +17,8 @@ let page = 1;
 
 const optionsObserver = {
   root: null,
-  rootMargin: '500px',
-  threshold: 0,
+  rootMargin: '1000px',
+  threshold: 1.0,
 };
 
 formRef.addEventListener('submit', onSubmit);
@@ -38,6 +38,7 @@ async function onSubmit(evt) {
   } else {
     Notiflix.Notify.success(`Hooray! We found ${totalHits} images.`);
     galleryRef.innerHTML = createCards(responses.hits);
+    observer.observe(guard);
   }
 
   if (responses.totalHits === 0) {
@@ -70,15 +71,15 @@ function onPagination(entries, observer) {
   entries.forEach(async entry => {
     if (entry.isIntersecting) {
       const result = await queryFetch(inputValue);
-      page += 1;
-      console.log(page);
+
       if (result.hits.length < 40) {
         Notiflix.Notify.info(
           "We're sorry, but you've reached the end of search results."
         );
       }
 
-      galleryRef.insertAdjacentHTML('beforeend', createCards(result));
+      observer.observe(guard);
+      galleryRef.insertAdjacentHTML('beforeend', createCards(result.hits));
       simpleLightBox.refresh();
     }
   });
