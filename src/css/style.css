@@ -48,7 +48,9 @@ img{
         pointer-events: auto;
         color: inherit;
 }
-
+.js-guard {
+    display: none;
+}
 .photo-card {
     width: 350px;
 

@@ -26,11 +26,19 @@ const observer = new IntersectionObserver(onPagination, optionsObserver);
 
 async function onSubmit(evt) {
   evt.preventDefault();
+  page = 1;
+  guard.style.display = 'none';
   galleryRef.innerHTML = '';
-  inputValue = evt.target.elements.searchQuery.value.trim();
-  const responses = await queryFetch(inputValue);
-  const totalHits = responses.totalHits;
 
+  inputValue = evt.target.elements.searchQuery.value.trim();
+
+  if (!inputValue) {
+    Notiflix.Notify.failure('Please, fill the input!');
+    return;
+  }
+  const responses = await queryFetch(inputValue);
+  guard.style.display = 'block';
+  const totalHits = responses.totalHits;
   if (responses.hits.length === 0) {
     Notiflix.Notify.failure(
       'Sorry, there are no images matching your search query. Please try again.'
@@ -71,14 +79,12 @@ function onPagination(entries, observer) {
   entries.forEach(async entry => {
     if (entry.isIntersecting) {
       const result = await queryFetch(inputValue);
-
-      if (result.hits.length < 40) {
-        Notiflix.Notify.info(
-          "We're sorry, but you've reached the end of search results."
-        );
-      }
-
       observer.observe(guard);
+      if (page === 5) {
+        observer.disconnect(guard);
+        return;
+      }
+      console.log(result);
       galleryRef.insertAdjacentHTML('beforeend', createCards(result.hits));
       simpleLightBox.refresh();
     }
