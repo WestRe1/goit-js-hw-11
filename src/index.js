@@ -43,21 +43,19 @@ async function onSubmit(evt) {
     Notiflix.Notify.failure(
       'Sorry, there are no images matching your search query. Please try again.'
     );
+    guard.style.display = 'none';
+  } else if (responses.totalHits === 0) {
+    Notiflix.Notify.failure(
+      'Sorry, there are no images matching your search query. Please try again.'
+    );
+    guard.style.display = 'none';
   } else {
     Notiflix.Notify.success(`Hooray! We found ${totalHits} images.`);
     galleryRef.innerHTML = createCards(responses.hits);
     observer.observe(guard);
+    simpleLightBox.refresh();
+    evt.target.reset();
   }
-
-  if (responses.totalHits === 0) {
-    Notiflix.Notify.failure(
-      'Sorry, there are no images matching your search query. Please try again.'
-    );
-  } else
-    galleryRef.insertAdjacentHTML('beforeend', createCards(responses.hits));
-
-  simpleLightBox.refresh();
-  evt.target.reset();
 }
 
 async function queryFetch(name) {
